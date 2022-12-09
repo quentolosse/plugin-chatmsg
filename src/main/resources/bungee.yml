@@ -1,0 +1,4 @@
+name: msgchat
+author: Quentolosse
+version: 1.0
+main: com.quentolosse.commandmsg.CommandeMsg
