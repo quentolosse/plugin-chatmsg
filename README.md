@@ -40,13 +40,13 @@ pseudo-format: '&d%{pseudo}'
 
 groups: #liste des groupes
   lobby: #nom du groupe
-    shared: true # Tchat de ces serveurs sont syncronisés entre tous ces serveurs
+    shared: true # Les tchats de ces serveurs sont syncronisés entre tous ces serveurs
     servers: # Serveurs dans ce groupe
     - hub1
     - hub2
     - hub3
   game:
-    shared: false #Tchats de ces serveurs sont UNIQUEMENT reçus sur ces serveurs.
+    shared: false #Les tchats de ces serveurs sont UNIQUEMENT reçus sur ces serveurs.
     servers:
     - game1
     - game2
