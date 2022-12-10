@@ -53,7 +53,8 @@ public class MsgEventListener implements Listener{
         this.chatFormat = config.getString("chat-format").replace("&", "§");
         this.pseudoFormat = config.getString("pseudo-format").replace("&", "§");
 
-        ArrayList<LinkedHashMap> groupes = (ArrayList<LinkedHashMap>)config.get("groups"); 
+        Object temp = config.get("groups");
+        ArrayList<LinkedHashMap> groupes = (ArrayList<LinkedHashMap>)temp; 
 
         for (LinkedHashMap groupe : groupes) {
 
