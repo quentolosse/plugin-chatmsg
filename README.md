@@ -21,10 +21,12 @@ Les messages envoyés par les joueurs sont envoyés sur les serveurs du même gr
 
 ## Exemple de fichier `config.yml`:
 ```yaml
-# message de join
+prefix: '&9&lEternaliaa &7> '
+players-prefix: '&f&lJ'
+# message bungee de join
 join-format: '   &a&l+&r &7[&r%{prefix}&7] %{player}'
 
-#message de leave
+#message bungee de leave
 leave-format: '   &c&l-&r &7[&r%{prefix}&7] %{player}'
 
 #message de /msg et /r 
@@ -35,21 +37,21 @@ msg-receive: '&a&o%{player} &7--> &oMoi &7>>> &o%{message}'
 #message de tchat
 chat-format: '&7[&r%{prefix}&7] %{pseudo} &8>>> &f%{message}'
 
-#Si un message de tachat contient le pseudo du joueur il est remplacé par ce texte.
+#Si un message contient le pseudo du joueur, remplacer le pseudo par ce texte.
 pseudo-format: '&d%{pseudo}' 
 
+
 groups: #liste des groupes
-  lobby: #nom du groupe
-    shared: true # Les tchats de ces serveurs sont syncronisés entre tous ces serveurs
-    servers: # Serveurs dans ce groupe
-    - hub1
-    - hub2
-    - hub3
-  game:
-    shared: false #Les tchats de ces serveurs sont UNIQUEMENT reçus sur ces serveurs.
-    servers:
-    - game1
-    - game2
-    - game3
+  - lobby: #nom du groupe
+     shared: true # Tchat de ces serveurs sont sync entre tous ces serveurs
+     servers: # Serveurs dans ce groupe
+       - server1
+       - lobbyserver1
+       - hubserver1
+  - autres:
+     shared: false
+     servers:
+       - game1
+       - gmae2
 ```
 
