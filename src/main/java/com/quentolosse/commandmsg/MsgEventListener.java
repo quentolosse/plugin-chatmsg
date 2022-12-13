@@ -53,7 +53,9 @@ public class MsgEventListener implements Listener{
         this.chatFormat = config.getString("chat-format").replace("&", "§");
         this.pseudoFormat = config.getString("pseudo-format").replace("&", "§");
 
-        Object temp = config.get("groups");
+        List<?> temp = config.getList("groups");
+        
+        
         ArrayList<LinkedHashMap> groupes = (ArrayList<LinkedHashMap>)temp; 
 
         for (LinkedHashMap groupe : groupes) {
@@ -80,7 +82,7 @@ public class MsgEventListener implements Listener{
 
         ProxiedPlayer player = event.getPlayer();
         CachedMetaData metaData = this.api.getPlayerAdapter(ProxiedPlayer.class).getMetaData(player);
-        String prefix = metaData.getPrefix();
+        String prefix = metaData.getPrefix().replace("&", "§");
 
         try {
             Thread.sleep(2000);
@@ -105,7 +107,7 @@ public class MsgEventListener implements Listener{
         ProxiedPlayer player = event.getPlayer();
 
         CachedMetaData metaData = this.api.getPlayerAdapter(ProxiedPlayer.class).getMetaData(player);
-        String prefix = metaData.getPrefix();
+        String prefix = metaData.getPrefix().replace("&", "§");
 
         String toSend = this.leaveFormat.replace("%{prefix}", prefix).replace("%{player}", player.getName());
         ProxyServer.getInstance().broadcast(new ComponentBuilder(toSend).create());
@@ -119,26 +121,54 @@ public class MsgEventListener implements Listener{
         if(!event.isCommand()) { 
             
             CachedMetaData metaData = this.api.getPlayerAdapter(ProxiedPlayer.class).getMetaData(player);
-            String prefix = metaData.getPrefix();
+            String prefix = metaData.getPrefix().replace("&", "§");
 
             String serveur = player.getServer().getInfo().getName();
             Collection<ProxiedPlayer> receiversDebut = player.getServer().getInfo().getPlayers();
             Set<ProxiedPlayer> receivers = new HashSet<ProxiedPlayer>(receiversDebut);
 
-            if (this.groupesServeurs.get(this.groupeDuServeur.get(serveur)).shared) {
-                for (String name : this.groupesServeurs.get(this.groupeDuServeur.get(serveur)).serveurs) {
-                    if (name != serveur) {
-                        Collection<ProxiedPlayer> receiversTemp = ProxyServer.getInstance().getServers().get(name).getPlayers();
-                        for (ProxiedPlayer p : receiversTemp) {
-                            receivers.add(p);
+            try{
+                if (this.groupesServeurs.get(this.groupeDuServeur.get(serveur)).shared) {
+                    for (String name : this.groupesServeurs.get(this.groupeDuServeur.get(serveur)).serveurs) {
+                        if (name != serveur) {
+                            Collection<ProxiedPlayer> receiversTemp = ProxyServer.getInstance().getServers().get(name).getPlayers();
+                            for (ProxiedPlayer p : receiversTemp) {
+                                receivers.add(p);
+                            }
                         }
                     }
                 }
             }
+            catch(Exception e){
+                return;
+            }
+            
             
             for(ProxiedPlayer receiver : receivers){
-                String message = event.getMessage().replace(receiver.getName(), pseudoFormat).replace("%{pseudo}", receiver.getName());
-                String toSend = chatFormat.replace("%{prefix}", prefix).replace("%{pseudo}", player.getName()).replace("%{message}", message);
+                String message = event.getMessage();
+                String messagePseudoFormat = new String();
+                if(message.toLowerCase().contains(receiver.getName().toLowerCase())){
+                    String[] messageWithoutMentions = message.toLowerCase().split(receiver.getName().toLowerCase());
+                    String messageWithNoMentions = new String();
+                    for (String part : messageWithoutMentions) {
+                        messageWithNoMentions = messageWithNoMentions.concat(part);
+                    }
+                    int i = 0; // déso pour ce nom pas très explicit, j'avais pas d'idées ¯\_(ツ)_/¯  ...  Comment ça personne ne lit mon code ?
+                    for (String part : messageWithoutMentions) {
+                        messagePseudoFormat = messagePseudoFormat.concat(messageWithNoMentions.substring(i, i + part.length()));
+                        messagePseudoFormat = messagePseudoFormat.concat(pseudoFormat);
+                        i += part.length();
+                    }
+                    if (!message.toLowerCase().endsWith(receiver.getName().toLowerCase())) {
+                        messagePseudoFormat = (String)messagePseudoFormat.subSequence(0, messagePseudoFormat.length() - pseudoFormat.length());
+                    }
+                }
+                else {
+                    messagePseudoFormat = message;
+                }
+                    
+                String messageMention = messagePseudoFormat.replace("%{pseudo}", receiver.getName());
+                String toSend = chatFormat.replace("%{prefix}", prefix).replace("%{pseudo}", player.getName()).replace("%{message}", messageMention);
                 receiver.sendMessage(new ComponentBuilder(toSend).create());
             }
 
